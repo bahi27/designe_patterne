@@ -1,0 +1,43 @@
+@startuml
+title CMS - Pattern Observer (Logger)
+
+interface LoggerObserver {
+  +update(action : String, page : Page) : void
+}
+
+interface SubjectObserved {
+  +attach(observer : LoggerObserver) : void
+  +detach(observer : LoggerObserver) : void
+  +notifyObservers(action : String, page : Page) : void
+}
+
+class Site {
+  -title : String
+  -pages : Map<String, Page>
+  -observers : Set<LoggerObserver>
+  +addPage(page : Page) : void
+  +removePage(page : Page) : void
+  +attach(observer : LoggerObserver) : void
+  +detach(observer : LoggerObserver) : void
+  +notifyObservers(action : String, page : Page) : void
+}
+
+class ConsoleLoggerObserver {
+  +update(action : String, page : Page) : void
+}
+class FileLoggerObserver {
+  -logFile : Path
+  +update(action : String, page : Page) : void
+}
+class ApiLoggerObserver {
+  -endpoint : URI
+  +update(action : String, page : Page) : void
+}
+
+SubjectObserved <|.. Site
+LoggerObserver <|.. ConsoleLoggerObserver
+LoggerObserver <|.. FileLoggerObserver
+LoggerObserver <|.. ApiLoggerObserver
+Site "1" o--> "0..*" LoggerObserver : observers
+Site "1" --> "0..*" Page : pages
+@enduml
